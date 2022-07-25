@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="This website is intended for the rangeulation of the monthly payment of a mortgage">
+        <meta name="keywords" content="immobilier,interets,credit">
+        <meta name="author" content="Ikram Chehouani">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Credit immobilier</title>
+        <link rel="icon" type="image/png" href="uploads/firsticon.png">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="wall"></div>
+        <div class="wall paper2"></div>
+        <div class="wall paper3"></div>
+        <div class="content">
+            <h1>Calcul des mensualités de votre prêt immobilier</h1>
+            <div class="premiest">
+                <input class="range" type="range" id="myRange" value="0" min="0" max="600000">
+                <img class="icon" src="uploads/thumb1.png"/>
+                <h3>Montant de votre prêt: <span class="range-value" id="money"></span> €</h3>
+            </div>
+            <script>
+                var range = document.getElementById("myRange");
+                var output = document.getElementById("money");
+                output.innerHTML = range.value;
+                range.oninput = function() {
+                    output.innerHTML = this.value;
+                }
+            </script>
+            <div class="premiest">
+                <Input class="range" type="range" name "" value="2" min="2" max="30" onChange="update(this.value)" onmousemove="update(this.value)"></Input>
+                <img class="icon" id="update" src="uploads/year.png"/>
+                <h3>Durée de votre prêt: <span class="range-value" id="rangeValue">2</span> ans</h3>
+            </div>
+            <script type="text/javascript">
+                function rangeSlide(value) {
+                    document.getElementById('rangeValue').innerHTML = value;
+                }
+            </script>
+            <h3 class="premiest">Taux d'intêret: <span class="range-value" id="thecondition">1,5</span> %</h3>
+            <h3 class="premiest">Taux d'assurance: <span class="range-value" id="assurance">0,34</span> %</h3>
+            <button id="send" onclick="ajaxFunction()">Faire une simulation</button>
+        </div>
+        <script>
+            function update(value){
+                rangeSlide(value);
+                console.log("start");
+                var calc = document.getElementById("rangeValue").innerHTML;
+                let test;
+                if (calc >= 2 && calc <= 9) {
+                    test = "1,5";
+                }
+                else if(calc >= 10 && calc <= 11){
+                    test = "1,52";
+                }
+                else if(calc >= 12 && calc <= 14){
+                    test = "1,62";
+                }
+                else if(calc >= 15 && calc <= 19){
+                    test = "1,69";
+                }
+                else if(calc >= 20 && calc <= 24){
+                    test = "1,85";
+                }
+                else if(calc >= 25 && calc <= 29){
+                    test = "2";
+                }
+                else{
+                    test = "0";
+                    console.log("*je suis là");
+                }
+                console.log("taux =  ",test);
+                document.getElementById("thecondition").innerHTML = test;
+                console.log("taux updated",document.getElementById("thecondition").innerHTML);
+            }
+        </script>
+        <script>
+            function ajaxFunction(){
+                console.log("start f_ajax");
+                var money = document.getElementById("money").innerHTML;
+                var year = document.getElementById("rangeValue").innerHTML;
+                var interet = document.getElementById("thecondition").innerHTML;
+                var assur = document.getElementById("assurance").innerHTML;
+                var server_data = [
+                    {"C": money},
+                    {"N": year},
+                    {"T": interet},
+                    {"ASSU": assur}
+                ];
+                console.log(server_data);
+                $.ajax({
+                    type: "POST",
+                    method: "POST",
+                    url: "http://127.0.0.1:5000/calculator",
+                    data: JSON.stringify(server_data),
+                    contentType: "application/json",
+                    dataType: 'json',
+                    // headers: {  'Access-Control-Allow-Origin': '*' },
+                    success: function(result) {
+                        console.log("Result:");
+                        console.log(result);
+                    },
+                    error: function (response) {
+                        console.log("Error:");
+                        console.log(response);
+                    }
+                })
+            }
+        </script>
+    </body>
+</html>
